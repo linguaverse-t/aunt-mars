@@ -36,7 +36,7 @@ export const renderFooter = () => {
                 <div>
                     <h4 class="font-bold text-lg mb-4 font-mali">Connect</h4>
                     <div class="flex space-x-4">
-                        <a href="https://www.facebook.com/groups/767597542267158?locale=th_TH" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-blue-500 transition duration-300 ease-in-out"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.facebook.com/profile.php?id=61588567425145&locale=th_TH" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-blue-500 transition duration-300 ease-in-out"><i class="fab fa-facebook-f"></i></a>
 			<a href="https://lin.ee/5fdbMQ3" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-green-500 transition duration-300 ease-in-out"><i class="fa-brands fa-line"></i></a>
                         <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-pastel-blue transition"><i class="fab fa-twitter"></i></a>
                         <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-pink-500 transition duration-300 ease-in-out"><i class="fab fa-instagram"></i></a>
