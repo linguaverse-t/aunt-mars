@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เกี่ยวกับเรา - LinguaVerse</title>
+    <link rel="icon" href="images/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pastel: { purple: '#D8B4FE', pink: '#F9A8D4', blue: '#A5F3FC', yellow: '#FDE68A', green: '#86EFAC', bg: '#FDF2F8' },
+                        brand: { dark: '#4C1D95', primary: '#C084FC' }
+                    },
+                    fontFamily: { mali: ['Mali', 'cursive'], sarabun: ['Sarabun', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-pastel-bg font-mali text-gray-700 flex flex-col min-h-screen">
+
+    <header id="navbar-container" class="sticky top-0 z-50"></header>
+    <div id="auth-modal-container"></div>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        
+        <div class="text-center mb-16 animate-fade-in">
+            <h1 class="text-4xl md:text-5xl font-bold text-brand-dark mb-4">เกี่ยวกับ LinguaVerse</h1>
+            <div class="w-24 h-1 bg-gradient-to-r from-pastel-purple to-pastel-pink mx-auto rounded-full"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <div class="bg-white p-8 rounded-3xl shadow-lg border border-pastel-blue/30 hover:shadow-xl transition transform hover:-translate-y-1">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6 text-blue-500 text-3xl mx-auto">
+                    <i class="fas fa-rocket fa-bounce" style="--fa-animation-duration: 3s;"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-center mb-4 text-brand-dark">ภารกิจของเรา</h2>
+                <p class="font-saraban text-gray-600 leading-relaxed text-center">
+                    LinguaVerse เป็นแพลตฟอร์มส่วนตัว สำหรับเก็บรักษา และแชร์นิยายแปลจากภาษาเกาหลี จีน ญี่ปุ่น และอังกฤษ ที่แปลเป็นภาษาไทย เพื่อเพื่อนสมาชิกที่ชื่นชอบการอ่านนิยายแปลเท่านั้น เราเชื่อว่าการแปลและการอ่านงานวรรณกรรมที่ดี เป็นวิธีที่ยอดเยี่ยมในการเรียนรู้วัฒนธรรมและภาษาต่างๆ ผ่านเรื่องราวที่น่าสนใจจากการแปลที่มีคุณภาพ และเข้าถึงได้ง่าย
+                </p>
+            </div>
+
+            <div class="bg-white p-8 rounded-3xl shadow-lg border border-pastel-purple/30 hover:shadow-xl transition transform hover:-translate-y-1">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-6 text-purple-500 text-3xl mx-auto">
+                    <i class="fas fa-eye fa-beat-fade" style="--fa-animation-duration: 3s;"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-center mb-4 text-brand-dark">วิสัยทัศน์ของเรา</h2>
+                <p class="font-saraban text-gray-600 leading-relaxed text-center">
+                    เราต้องการสร้างชุมชนผู้รักการอ่านที่ชื่นชมวรรณกรรมต่างประเทศ และสนับสนุนการแปลคุณภาพสูง ผ่านการให้ความสำคัญกับประสบการณ์ผู้อ่านและการสนับสนุนผู้แปล
+                </p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+            <div class="bg-white/80 p-6 rounded-2xl border-l-4 border-green-400 shadow-sm">
+                <h3 class="text-xl font-bold mb-2 flex items-center gap-2">
+                    <i class="fas fa-medal text-green-500"></i> คุณภาพ
+                </h3>
+                <p class="font-saraban text-sm text-gray-600">เรามุ่งมั่นที่จะให้การแปลที่ถูกต้อง เข้าใจง่าย ลื่นไหลไปตามอารมณ์ที่ผู้แต่งต้องการสื่อ</p>
+            </div>
+            <div class="bg-white/80 p-6 rounded-2xl border-l-4 border-yellow-400 shadow-sm">
+                <h3 class="text-xl font-bold mb-2 flex items-center gap-2">
+                    <i class="fas fa-users text-yellow-500"></i> ชุมชน
+                </h3>
+                <p class="font-saraban text-sm text-gray-600">เราสร้างพื้นที่สำหรับเชื่อมต่อกับผู้อ่าน เพื่อแบ่งปันความคิดเห็น และแชร์ประสบการณ์</p>
+            </div>
+            <div class="bg-white/80 p-6 rounded-2xl border-l-4 border-pink-400 shadow-sm">
+                <h3 class="text-xl font-bold mb-2 flex items-center gap-2">
+                    <i class="fas fa-heart text-pink-500"></i> ทีมของเรา
+                </h3>
+                <p class="font-saraban text-sm text-gray-600">LinguaVerse ก่อตั้งขึ้นโดยกลุ่มผู้รักการอ่านและการแปล ที่มีความหลงใหลในการแบ่งปันวรรณกรรมที่ดี ทีมของเราประกอบด้วยผู้แปล บรรณาธิการ และนักพัฒนา ที่ทำงานเพื่อให้ประสบการณ์ที่ดีที่สุดแก่ผู้อ่าน</p>
+            </div>
+        </div>
+
+        <div class="bg-red-50 border-2 border-red-200 rounded-3xl p-8 mb-12 text-center relative overflow-hidden">
+            <div class="absolute -top-10 -left-10 w-40 h-40 bg-red-100 rounded-full blur-3xl opacity-50"></div>
+            <div class="relative z-10">
+                <h2 class="text-2xl font-bold text-red-600 mb-4 flex items-center justify-center gap-2">
+                    <i class="fas fa-shield-alt fa-shake"></i> ความเป็นส่วนตัว (สำคัญ)
+                </h2>
+                <p class="font-saraban text-red-800 leading-relaxed text-lg font-medium">
+                    LinguaVerse ก่อตั้งขึ้นโดยกลุ่มผู้รักการอ่านและการแปล ที่มีความหลงใหลในการแบ่งปันวรรณกรรมที่ดี ทีมของเราประกอบด้วยผู้แปล บรรณาธิการ และนักพัฒนา ที่ทำงานเพื่อให้ประสบการณ์ที่ดีที่สุดแก่ผู้อ่าน
+                </p>
+            </div>
+        </div>
+
+    </main>
+
+    <footer id="footer-container" class="mt-auto"></footer>
+
+    <script type="module">
+        import { renderNavbar } from './js/components/navbar.js';
+        import { renderFooter } from './js/components/footer.js';
+        import { showAuthModal } from './js/components/auth-modal.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            renderNavbar();
+            renderFooter();
+        });
+    </script>
+</body>
+</html>

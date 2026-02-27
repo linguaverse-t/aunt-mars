@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จัดการโปรไฟล์ - LinguaVerse</title>
+    <link rel="icon" href="images/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pastel: { purple: '#D8B4FE', pink: '#F9A8D4', blue: '#A5F3FC', yellow: '#FDE68A', green: '#86EFAC', bg: '#FDF2F8' },
+                        brand: { dark: '#4C1D95', primary: '#C084FC' }
+                    },
+                    fontFamily: { mali: ['Mali', 'cursive'], sarabun: ['Sarabun', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-pastel-bg font-mali text-gray-700 flex flex-col min-h-screen">
+
+    <header id="navbar-container" class="sticky top-0 z-50"></header>
+    <div id="auth-modal-container"></div>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        
+        <div class="bg-white rounded-3xl shadow-xl border border-pastel-purple/30 p-8 mb-8 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-pastel-pink/20 to-pastel-purple/20 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+
+            <div class="flex flex-col md:flex-row items-center gap-8 relative z-10">
+                <div class="relative group">
+                    <div class="w-32 h-32 rounded-full p-1 bg-gradient-to-tr from-pastel-purple to-pastel-pink">
+                        <img id="profileAvatar" src="https://via.placeholder.com/150" class="w-full h-full rounded-full object-cover border-4 border-white">
+                    </div>
+                    <button onclick="editAvatar()" class="absolute bottom-0 right-0 bg-white text-brand-dark p-2 rounded-full shadow-md hover:bg-pastel-purple hover:text-white transition">
+                        <i class="fas fa-camera"></i>
+                    </button>
+                </div>
+
+                <div class="text-center md:text-left flex-grow">
+                    <h1 id="profileName" class="text-3xl font-bold text-brand-dark mb-1">Loading...</h1>
+                    <p id="profileEmail" class="text-gray-400 font-saraban mb-4">loading@example.com</p>
+                    
+                    <div class="flex flex-wrap justify-center md:justify-start gap-4">
+                        <div class="bg-blue-50 px-4 py-2 rounded-xl flex items-center gap-2 border border-blue-100">
+                            <i class="fas fa-coins text-yellow-500 fa-bounce"></i>
+                            <div>
+                                <p class="text-xs text-gray-500">Points คงเหลือ</p>
+                                <p id="profilePoints" class="font-bold text-brand-dark text-lg">0</p>
+                            </div>
+                            <a href="topup.html?page=TopUp" class="ml-2 text-xs bg-brand-dark text-white px-2 py-1 rounded-lg hover:bg-brand-primary transition">+ เติม</a>
+                        </div>
+                        <div class="bg-purple-50 px-4 py-2 rounded-xl flex items-center gap-2 border border-purple-100">
+                            <i class="fas fa-crown text-pastel-purple fa-beat"></i>
+                            <div>
+                                <p class="text-xs text-gray-500">สถานะสมาชิก</p>
+                                <p id="profileRole" class="font-bold text-brand-dark text-lg uppercase">User</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden sticky top-24">
+                    <nav class="flex flex-col">
+                        <button onclick="switchTab('info')" id="btn-info" class="tab-btn active-tab flex items-center gap-3 px-6 py-4 hover:bg-gray-50 transition border-l-4 border-pastel-purple bg-purple-50 text-brand-dark font-bold">
+                            <i class="fas fa-user-circle w-6"></i> ข้อมูลส่วนตัว
+                        </button>
+                        <button onclick="switchTab('history')" id="btn-history" class="tab-btn flex items-center gap-3 px-6 py-4 hover:bg-gray-50 transition border-l-4 border-transparent text-gray-600">
+                            <i class="fas fa-history w-6"></i> ประวัติการอ่าน
+                        </button>
+                        <button onclick="switchTab('favorite')" id="btn-favorite" class="tab-btn flex items-center gap-3 px-6 py-4 hover:bg-gray-50 transition border-l-4 border-transparent text-gray-600">
+                            <i class="fas fa-heart w-6"></i> นิยายที่ชอบ
+                        </button>
+                        <div class="h-px bg-gray-100 my-2"></div>
+                        <button id="logoutBtn" class="flex items-center gap-3 px-6 py-4 text-red-400 hover:bg-red-50 transition">
+                            <i class="fas fa-sign-out-alt w-6"></i> ออกจากระบบ
+                        </button>
+                    </nav>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3">
+                
+                <div id="tab-info" class="tab-content bg-white rounded-3xl shadow-lg border border-gray-100 p-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                        <i class="fas fa-edit text-pastel-purple mr-3"></i> แก้ไขข้อมูลส่วนตัว
+                    </h2>
+                    <form id="profileForm" class="space-y-6 max-w-xl">
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Username (ชื่อที่แสดง)</label>
+                            <input type="text" id="editUsername" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-pastel-purple outline-none font-saraban bg-gray-50" placeholder="Username">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Email</label>
+                            <input type="email" id="editEmail" class="w-full p-3 border rounded-xl bg-gray-100 text-gray-500 cursor-not-allowed font-saraban" readonly>
+                            <p class="text-xs text-gray-400 mt-1">* อีเมลไม่สามารถเปลี่ยนได้</p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-bold mb-1">เปลี่ยนรหัสผ่าน (Password)</label>
+                            <input type="password" id="editPassword" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-pastel-purple outline-none font-saraban" placeholder="เว้นว่างไว้หากไม่ต้องการเปลี่ยน">
+                            <p class="text-xs text-gray-400 mt-1">* ต้องมีความยาวอย่างน้อย 6 ตัวอักษร</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold mb-1">รูปโปรไฟล์ (URL)</label>
+                            <input type="text" id="editAvatarUrl" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-pastel-purple outline-none font-saraban" placeholder="ใส่ลิงก์รูปภาพ (รูปจะแสดงตัวอย่างด้านบนอัตโนมัติ)">
+                        </div>
+
+                        <button type="submit" class="bg-pastel-purple hover:bg-brand-primary text-white py-3 px-8 rounded-xl font-bold shadow-md transition transform hover:scale-105">
+                            บันทึกการเปลี่ยนแปลง
+                        </button>
+                    </form>
+                </div>
+
+                <div id="tab-history" class="tab-content hidden space-y-4">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-history text-pastel-blue mr-3"></i> ประวัติการอ่านล่าสุด
+                    </h2>
+                    <div id="historyList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="col-span-full text-center py-10 text-gray-400">กำลังโหลด...</div>
+                    </div>
+                </div>
+
+                <div id="tab-favorite" class="tab-content hidden space-y-4">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-heart text-pastel-pink mr-3"></i> นิยายที่ชื่นชอบ
+                    </h2>
+                    <div id="favList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="col-span-full text-center py-10 text-gray-400">กำลังโหลด...</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <footer id="footer-container" class="mt-auto"></footer>
+    
+    <script type="module" src="js/pages/profile.js"></script>
+    <script>
+        // Tab Switcher Logic
+        window.switchTab = (tabName) => {
+            // Buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = 'tab-btn flex items-center gap-3 px-6 py-4 hover:bg-gray-50 transition border-l-4 border-transparent text-gray-600';
+            });
+            const activeBtn = document.getElementById(`btn-${tabName}`);
+            activeBtn.className = 'tab-btn active-tab flex items-center gap-3 px-6 py-4 hover:bg-gray-50 transition border-l-4 border-pastel-purple bg-purple-50 text-brand-dark font-bold';
+
+            // Content
+            document.querySelectorAll('.tab-content').forEach(div => div.classList.add('hidden'));
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+        }
+
+        window.previewAvatar = () => {
+            const url = document.getElementById('editAvatarUrl').value;
+            if(url) document.getElementById('profileAvatar').src = url;
+        }
+
+        window.editAvatar = () => {
+            window.switchTab('info');
+            document.getElementById('editAvatarUrl').focus();
+            Swal.fire({
+                title: 'เปลี่ยนรูปโปรไฟล์',
+                text: 'กรุณากรอก URL รูปภาพใหม่ในช่องด้านล่าง',
+                icon: 'info',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+    </script>
+</body>
+</html>

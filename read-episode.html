@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>อ่านนิยาย - LinguaVerse</title>
+    <link rel="icon" href="images/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class', // เปิดใช้ Dark Mode แบบ Manual
+            theme: {
+                extend: {
+                    colors: {
+                        pastel: { purple: '#D8B4FE', pink: '#F9A8D4', blue: '#A5F3FC', yellow: '#FDE68A', green: '#86EFAC', bg: '#FDF2F8' },
+                        brand: { dark: '#4C1D95', primary: '#C084FC' }
+                    },
+                    fontFamily: { mali: ['Mali', 'cursive'], sarabun: ['Sarabun', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* CSS สำหรับเนื้อหาอ่านนิยายโดยเฉพาะ */
+	#novel-content {
+        font-family: 'Sarabun', sans-serif !important; /* บังคับใช้ Sarabun */
+	font-size: 18px; /* ค่าเริ่มต้น */
+
+	/* เพิ่มโค้ดป้องกันการ Select (ลากคลุมข้อความ) */
+    -webkit-user-select: none; /* สำหรับ Safari */
+    -moz-user-select: none; /* สำหรับ Firefox */
+    -ms-user-select: none; /* สำหรับ IE/Edge */
+    user-select: none; /* มาตรฐาน */
+    }
+        #novel-content p, 
+        #novel-content div {
+        text-indent: 40px !important;       /* ย่อหน้า */
+        margin-bottom: 20px !important;     /* ระยะห่างระหว่างย่อหน้า */
+        line-height: 2 !important;          /* ระยะห่างบรรทัด */
+        min-height: 24px;                   /* กันบรรทัดว่างหาย */
+    }
+
+	/* สไตล์สำหรับรูปเส้นคั่น */
+    .custom-separator {
+        display: block;
+        margin: 40px auto;
+        width: 300px;       /* กำหนดความกว้างให้พอดี */
+        height: auto;
+        opacity: 0.8;
+    }
+
+        /* Dark Mode Override */
+        .dark body { background-color: #1a1a1a; color: #e5e5e5; }
+        .dark .bg-white { background-color: #262626; color: #e5e5e5; border-color: #404040; }
+        .dark .text-gray-800 { color: #f3f4f6; }
+        .dark .text-gray-600 { color: #d1d5db; }
+    </style>
+</head>
+<body class="bg-pastel-bg font-mali text-gray-700 flex flex-col min-h-screen transition-colors duration-300">
+
+    <header id="navbar-container" class="sticky top-0 z-50"></header>
+    <div id="auth-modal-container"></div>
+
+    <div class="sticky top-20 z-40 bg-white/90 dark:bg-gray-800/90 backdrop-blur shadow-sm border-b border-gray-100 dark:border-gray-700 py-3 transition-colors duration-300">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <a id="backToDetail" href="#" class="text-gray-500 hover:text-pastel-purple dark:text-gray-300">
+                    <i class="fas fa-chevron-left mr-1"></i> <span class="hidden sm:inline">หน้าเรื่อง</span>
+                </a>
+                <span class="text-gray-300 dark:text-gray-600">|</span>
+                <h1 id="epTitleHeader" class="font-bold text-brand-dark dark:text-pastel-purple text-sm sm:text-base line-clamp-1">Loading...</h1>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <button onclick="adjustFontSize(-1)" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-pastel-purple hover:text-white transition flex items-center justify-center text-xs"><i class="fas fa-minus"></i></button>
+                <i class="fas fa-font text-gray-400 text-sm"></i>
+                <button onclick="adjustFontSize(1)" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-pastel-purple hover:text-white transition flex items-center justify-center text-xs"><i class="fas fa-plus"></i></button>
+                
+                <button id="themeToggle" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-yellow-300 dark:hover:bg-gray-600 transition flex items-center justify-center ml-2">
+                    <i class="fas fa-moon dark:text-yellow-300"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-grow container mx-auto px-4 py-8 max-w-4xl">
+        
+        <article class="bg-white dark:bg-gray-800 p-6 md:p-12 rounded-3xl shadow-lg border border-pastel-purple/20 transition-colors duration-300 min-h-[500px]">
+            <div class="text-center mb-10 border-b border-gray-100 dark:border-gray-700 pb-6">
+                <h2 id="novelTitle" class="text-lg text-gray-500 dark:text-gray-400 font-bold mb-2">ชื่อเรื่อง...</h2>
+                <h1 id="epTitle" class="text-2xl md:text-3xl font-bold text-brand-dark dark:text-pastel-purple">ชื่อตอน...</h1>
+            </div>
+
+            <div id="novel-content" class="font-saraban text-lg text-gray-800 dark:text-gray-200 leading-relaxed transition-all duration-300">
+                <div class="text-center py-20 text-gray-400"><i class="fas fa-circle-notch fa-spin mr-2"></i> กำลังโหลดเนื้อหา...</div>
+            </div>
+        </article>
+
+        <div class="flex justify-between items-center mt-8 gap-2">
+            <button id="prevBtn" class="flex-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 hover:border-pastel-purple hover:text-pastel-purple py-3 rounded-xl font-bold shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed">
+                <i class="fas fa-arrow-left mr-2"></i> ตอนก่อนหน้า
+            </button>
+            <button onclick="toggleTocModal()" class="flex-none bg-pastel-purple text-white w-12 h-12 rounded-full shadow-lg hover:bg-brand-primary transition flex items-center justify-center text-xl">
+                <i class="fas fa-list"></i>
+            </button>
+            <button id="nextBtn" class="flex-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 hover:border-pastel-purple hover:text-pastel-purple py-3 rounded-xl font-bold shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed">
+                ตอนถัดไป <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+
+        <section class="mt-16">
+            <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center">
+                <i class="fas fa-comments text-pastel-pink mr-3"></i> ความคิดเห็น <span id="commentCount" class="ml-2 text-sm bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full text-gray-500">0</span>
+            </h3>
+
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md mb-8 border border-gray-100 dark:border-gray-700">
+                <div class="flex gap-4">
+                    <div id="currentUserAvatar" class="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden">
+                        <img src="https://via.placeholder.com/40" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-grow">
+                        <p id="currentUserName" class="font-bold text-gray-700 dark:text-gray-300 text-sm mb-2">Guest</p>
+                        <textarea id="commentInput" class="w-full border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl p-3 font-saraban focus:ring-2 focus:ring-pastel-pink outline-none transition resize-none" rows="3" placeholder="แสดงความคิดเห็นเกี่ยวกับตอนนี้..."></textarea>
+                        <div class="flex justify-end mt-2">
+                            <button onclick="postComment()" class="bg-pastel-pink hover:bg-pink-400 text-white px-6 py-2 rounded-full font-bold shadow-md transition transform hover:scale-105">
+                                Post Comment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="commentsList" class="space-y-6">
+                </div>
+        </section>
+
+    </main>
+
+    <div id="tocModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="toggleTocModal()"></div>
+        <div class="absolute bottom-0 md:bottom-auto md:top-1/2 md:left-1/2 md:transform md:-translate-x-1/2 md:-translate-y-1/2 w-full md:w-[500px] h-[80vh] md:h-[600px] bg-white dark:bg-gray-800 rounded-t-3xl md:rounded-3xl shadow-2xl flex flex-col animate-fade-in-up">
+            <div class="p-4 border-b dark:border-gray-700 flex justify-between items-center">
+                <h3 class="font-bold text-xl dark:text-white">สารบัญตอน</h3>
+                <button onclick="toggleTocModal()" class="text-gray-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <div id="tocList" class="flex-grow overflow-y-auto p-4 space-y-2 custom-scrollbar">
+                </div>
+        </div>
+    </div>
+
+    <button id="scrollToTopBtn" class="fixed bottom-8 right-8 bg-pastel-purple hover:bg-brand-primary text-white p-4 rounded-full shadow-lg transition-all duration-300 opacity-0 translate-y-10 z-50 hidden">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <footer id="footer-container" class="mt-auto"></footer>
+
+    <script type="module" src="js/pages/read-episode.js"></script>
+    <script>
+        // Global Helpers exposed for inline onclick
+        function adjustFontSize(change) { window.changeFontSize(change); }
+        function toggleTocModal() { 
+            const m = document.getElementById('tocModal');
+            m.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>

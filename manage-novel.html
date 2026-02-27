@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จัดการนิยาย - LinguaVerse</title>
+    <link rel="icon" href="images/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pastel: { purple: '#D8B4FE', pink: '#F9A8D4', blue: '#A5F3FC', yellow: '#FDE68A', green: '#86EFAC', bg: '#FDF2F8' },
+                        brand: { dark: '#4C1D95', primary: '#C084FC' }
+                    },
+                    fontFamily: { mali: ['Mali', 'cursive'], sarabun: ['Sarabun', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* CSS เฉพาะสำหรับจัดรูปแบบกล่องเรื่องย่อในหน้านี้เท่านั้น ไม่กระทบหน้าอื่น */
+        .novel-synopsis p {
+            text-indent: 2em; /* เยื้องย่อหน้า */
+            margin-bottom: 1em; /* ระยะห่างระหว่างย่อหน้า */
+            line-height: 1.8; /* ระยะห่างระหว่างบรรทัด */
+        }
+    </style>
+</head>
+<body class="bg-pastel-bg font-mali text-gray-700 flex flex-col min-h-screen">
+
+    <header id="navbar-container" class="sticky top-0 z-50"></header>
+    <div id="auth-modal-container"></div>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-brand-dark mb-6 border-l-4 border-pastel-pink pl-4">
+            <i class="fas fa-book-open mr-2"></i>ระบบจัดการนิยาย
+        </h1>
+
+        <div class="bg-white p-8 rounded-3xl shadow-lg border border-pastel-purple/30 mb-10">
+            <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="bg-pastel-purple text-white w-8 h-8 rounded-full flex items-center justify-center mr-2 text-sm">1</span>
+                ข้อมูลนิยาย
+            </h2>
+
+            <form id="novelForm" class="space-y-6">
+                <input type="hidden" id="novelId"> <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                    <div class="md:col-span-3 flex flex-col items-center">
+                        <div class="w-full aspect-[2/3] bg-gray-100 rounded-xl overflow-hidden border-2 border-dashed border-gray-300 relative mb-2 group">
+                            <img id="coverPreview" src="https://via.placeholder.com/300x450?text=Cover" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-white text-xs">ตัวอย่างปก</div>
+                        </div>
+                        <input type="text" id="coverUrl" placeholder="วางลิงก์รูปปก (URL)..." class="w-full text-sm p-2 border rounded-lg focus:ring-2 focus:ring-pastel-purple outline-none font-saraban">
+                    </div>
+
+                    <div class="md:col-span-9 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold mb-1">ชื่อเรื่อง (อังกฤษ) <span class="text-red-500">*</span></label>
+                            <input type="text" id="titleEN" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-pastel-purple outline-none font-saraban" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-1">ชื่อเรื่อง (ไทย) <span class="text-red-500">*</span></label>
+                            <input type="text" id="titleTH" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-pastel-purple outline-none font-saraban" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-1">ชื่อเรื่อง (ต้นฉบับ)</label>
+                            <input type="text" id="originalTitle" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-pastel-purple outline-none font-saraban">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-1">ผู้แต่ง</label>
+                            <input type="text" id="author" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-pastel-purple outline-none font-saraban">
+                        </div>
+			   <div>
+                            <label class="block text-sm font-bold mb-1">เรตติ้ง (Rating)</label>
+                            <input type="number" step="0.1" min="0" max="5" id="rating" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-pastel-purple outline-none font-saraban" placeholder="เช่น 4.5">
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-gray-100">
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-sm font-bold mb-1">ภาษาต้นฉบับ</label>
+                        <select id="language" class="w-full p-2.5 border rounded-xl bg-white font-saraban">
+                            <option value="KR">เกาหลี (KR)</option>
+                            <option value="CN">จีน (CN)</option>
+                            <option value="JP">ญี่ปุ่น (JP)</option>
+                            <option value="EN">อังกฤษ (EN)</option>
+                            <option value="TH">ไทย (TH)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">สถานะ</label>
+                        <select id="status" class="w-full p-2.5 border rounded-xl bg-white font-saraban">
+                            <option value="Coming Soon">Coming Soon</option>
+                            <option value="Ongoing">Ongoing</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Hiatus">Hiatus</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center space-x-2 pt-6">
+                        <input type="checkbox" id="hasLicense" class="w-5 h-5 text-pastel-purple rounded focus:ring-pastel-purple">
+                        <label for="hasLicense" class="cursor-pointer select-none">เป็นนิยายลิขสิทธิ์ ©</label>
+                    </div>
+                    <div class="flex items-center space-x-2 pt-6">
+                        <input type="checkbox" id="isAdult" class="w-5 h-5 text-red-500 rounded focus:ring-red-500">
+                        <label for="isAdult" class="cursor-pointer select-none text-red-500 font-bold">เนื้อหา 18+</label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold mb-2">หมวดหมู่ (เลือกได้หลายข้อ)</label>
+                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2 bg-gray-50 p-4 rounded-xl border border-gray-200" id="genreContainer">
+                        </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold mb-2">เรื่องย่อ (Synopsis)</label>
+                    <div class="border rounded-xl overflow-hidden border-gray-300">
+                        <div class="bg-gray-100 p-2 flex flex-wrap gap-2 border-b border-gray-300">
+                            <button type="button" onclick="formatDoc('bold')" class="p-1.5 hover:bg-white rounded" title="ตัวหนา"><i class="fas fa-bold"></i></button>
+                            <button type="button" onclick="formatDoc('italic')" class="p-1.5 hover:bg-white rounded" title="ตัวเอียง"><i class="fas fa-italic"></i></button>
+                            <button type="button" onclick="formatDoc('underline')" class="p-1.5 hover:bg-white rounded" title="ขีดเส้นใต้"><i class="fas fa-underline"></i></button>
+                            <div class="w-px h-6 bg-gray-300 mx-1"></div>
+                            
+                            <div class="relative inline-block">
+                                <button type="button" onclick="document.getElementById('colorDropdown').classList.toggle('hidden')" class="p-1.5 hover:bg-white rounded flex items-center gap-1">
+                                    <i class="fas fa-palette"></i> <i class="fas fa-chevron-down text-xs"></i>
+                                </button>
+                                <div id="colorDropdown" class="hidden absolute top-full left-0 bg-white border shadow-lg rounded p-2 grid grid-cols-5 gap-1 w-32 z-10">
+                                    </div>
+                            </div>
+
+                            <div class="w-px h-6 bg-gray-300 mx-1"></div>
+                            <button type="button" onclick="formatDoc('justifyLeft')" class="p-1.5 hover:bg-white rounded"><i class="fas fa-align-left"></i></button>
+                            <button type="button" onclick="formatDoc('justifyCenter')" class="p-1.5 hover:bg-white rounded"><i class="fas fa-align-center"></i></button>
+                            <button type="button" onclick="formatDoc('justifyRight')" class="p-1.5 hover:bg-white rounded"><i class="fas fa-align-right"></i></button>
+                            <div class="w-px h-6 bg-gray-300 mx-1"></div>
+                            <button type="button" onclick="formatDoc('insertHorizontalRule')" class="p-1.5 hover:bg-white rounded"><i class="fas fa-minus"></i></button>
+                            <button type="button" onclick="formatDoc('undo')" class="p-1.5 hover:bg-white rounded"><i class="fas fa-undo"></i></button>
+                            <button type="button" onclick="formatDoc('redo')" class="p-1.5 hover:bg-white rounded"><i class="fas fa-redo"></i></button>
+                        </div>
+                        <!--<div id="editor" contenteditable="true" class="p-4 min-h-[150px] bg-white outline-none font-saraban"></div>-->
+			<div id="editor" contenteditable="true" class="novel-synopsis p-4 min-h-[250px] max-h-[450px] overflow-y-auto bg-white outline-none font-saraban text-base leading-relaxed text-gray-800 cursor-text"></div>
+                    </div>
+		    <p class="text-xs text-gray-400 mt-1">* กด Enter เพื่อขึ้นย่อหน้าใหม่ (ระบบจะจัดย่อหน้าให้สวยงามอัตโนมัติ)</p>
+                </div>
+
+                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                    <label class="block text-sm font-bold mb-2">สถานะการเผยแพร่</label>
+                    <div class="flex flex-col md:flex-row gap-4 items-center">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="isPublished" checked class="w-5 h-5 text-pastel-purple rounded focus:ring-pastel-purple">
+                            <span class="font-bold">เผยแพร่นิยายสู่สาธารณะ (เปิดให้อ่าน)</span>
+                        </label>
+                        <span class="text-xs text-gray-500 md:ml-4 border-l md:border-gray-300 md:pl-4">
+                            *หากนำเครื่องหมายออก นิยายจะถูกบันทึกเป็นแบบร่าง (Draft) แอดมินสามารถเข้ามาเปิดเผยแพร่ภายหลังได้
+                        </span>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 pt-4">
+                    <button type="submit" class="flex-1 bg-pastel-purple hover:bg-brand-primary text-white py-3 rounded-xl font-bold shadow-md transition transform hover:scale-105">
+                        <i class="fas fa-save mr-2"></i> บันทึกข้อมูล
+                    </button>
+                    <button type="button" onclick="resetForm()" class="px-6 bg-gray-200 hover:bg-gray-300 text-gray-600 rounded-xl font-bold transition">
+                        <i class="fas fa-eraser mr-2"></i> ล้าง
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="bg-white p-8 rounded-3xl shadow-lg border border-pastel-purple/30">
+            <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                <span class="bg-pastel-pink text-white w-8 h-8 rounded-full flex items-center justify-center mr-2 text-sm">2</span>
+                รายชื่อนิยายในระบบ
+            </h2>
+		<div class="mb-6 relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-pastel-purple/60"></i>
+                </div>
+                <input type="text" id="searchNovelInput" oninput="window.handleSearchNovel(this.value)" class="w-full pl-11 pr-4 py-2.5 border border-pastel-purple/30 rounded-full text-sm font-saraban focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-shadow bg-pastel-purple/5 placeholder-pastel-purple/60 text-gray-700" placeholder="ค้นหาชื่อเรื่องนิยาย...">
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-pastel-bg text-brand-dark border-b border-pastel-pink">
+                            <th class="p-3 rounded-tl-xl">รูปปก</th>
+                            <th class="p-3">ชื่อเรื่อง</th>
+                            <th class="p-3">สถานะ</th>
+                            <th class="p-3 text-center">จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="novelTableBody" class="font-saraban text-sm">
+                        <tr><td colspan="4" class="text-center p-4">กำลังโหลดข้อมูล...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+	    <div id="novelPaginationContainer" class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 border-t border-gray-100 pt-6 hidden">
+            </div>
+        </div>
+
+    </main>
+
+    <footer id="footer-container" class="mt-auto"></footer>
+
+    <button id="scrollToTopBtn" class="fixed bottom-8 right-8 bg-pastel-purple hover:bg-brand-primary text-white p-4 rounded-full shadow-lg transition-all duration-300 opacity-0 translate-y-10 z-50 hidden">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script type="module" src="js/pages/manage-novel.js"></script>
+    <script>
+        // Global functions for Rich Text Editor (outside module)
+        function formatDoc(cmd, value = null) {
+            if (value) {
+                document.execCommand(cmd, false, value);
+            } else {
+                document.execCommand(cmd);
+            }
+            document.getElementById('editor').focus();
+        }        
+    </script>
+</body>
+</html>

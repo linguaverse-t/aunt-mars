@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - LinguaVerse</title>
+    <link rel="icon" href="images/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pastel: { purple: '#D8B4FE', pink: '#F9A8D4', blue: '#A5F3FC', yellow: '#FDE68A', green: '#86EFAC', bg: '#FDF2F8' },
+                        brand: { dark: '#4C1D95', primary: '#C084FC' }
+                    },
+                    fontFamily: { mali: ['Mali', 'cursive'], sarabun: ['Sarabun', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-gray-50 font-mali text-gray-700 flex flex-col min-h-screen">
+
+    <header id="navbar-container" class="sticky top-0 z-[9999]"></header>
+    <div id="auth-modal-container"></div>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-brand-dark">Dashboard</h1>
+                <p class="text-gray-500 text-sm">ภาพรวมระบบและการจัดการ</p>
+            </div>
+            <div class="text-right">
+                <p class="text-sm font-bold text-pastel-purple" id="currentDate">-</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-blue-100 flex items-center justify-between hover:shadow-md transition">
+                <div>
+                    <p class="text-gray-400 text-xs font-bold uppercase">นิยายทั้งหมด</p>
+                    <h3 class="text-3xl font-bold text-blue-500 mt-1" id="stat-novels">0</h3>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-400 text-xl">
+                    <i class="fas fa-book"></i>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-purple-100 flex items-center justify-between hover:shadow-md transition">
+                <div>
+                    <p class="text-gray-400 text-xs font-bold uppercase">ผู้ใช้งาน</p>
+                    <h3 class="text-3xl font-bold text-purple-500 mt-1" id="stat-users">0</h3>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center text-purple-400 text-xl">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-pink-100 flex items-center justify-between hover:shadow-md transition">
+                <div>
+                    <p class="text-gray-400 text-xs font-bold uppercase">ยอดเติมเงิน (รออนุมัติ)</p>
+                    <h3 class="text-3xl font-bold text-pink-500 mt-1" id="stat-topup">0</h3>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-pink-50 flex items-center justify-center text-pink-400 text-xl">
+                    <i class="fas fa-wallet"></i>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-green-100 flex items-center justify-between hover:shadow-md transition">
+                <div>
+                    <p class="text-gray-400 text-xs font-bold uppercase">คอมเมนต์ใหม่</p>
+                    <h3 class="text-3xl font-bold text-green-500 mt-1" id="stat-comments">0</h3>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center text-green-400 text-xl">
+                    <i class="fas fa-comments"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-2 bg-white p-6 rounded-3xl shadow-lg border border-gray-100">
+                <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center"><i class="fas fa-chart-bar text-pastel-purple mr-2"></i> Top 7 นิยายยอดฮิต (ยอดวิวสูงสุด)</h3>
+                <div class="h-80 w-full">
+                    <canvas id="viewsChart"></canvas>
+                </div>
+            </div>
+
+            <div class="lg:col-span-1 bg-white p-6 rounded-3xl shadow-lg border border-gray-100 overflow-hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-800 flex items-center"><i class="fas fa-money-bill-wave text-pastel-green mr-2"></i> แจ้งเติมเงิน</h3>
+                    <a href="manage-topup.html" class="text-xs font-bold text-pastel-purple hover:text-brand-primary transition">ดูทั้งหมด <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+
+                <div id="topupList" class="space-y-4 max-h-80 overflow-y-auto custom-scrollbar pr-2">
+                    <div class="text-center text-gray-400 text-sm py-10">กำลังโหลด...</div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mt-8">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">เมนูด่วน</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <a href="manage-novel.html" class="flex items-center gap-3 p-4 bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-pastel-purple hover:bg-purple-50 transition">
+                    <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-500"><i class="fas fa-plus"></i></div>
+                    <span class="font-bold text-gray-700">เพิ่มนิยายใหม่</span>
+                </a>
+                <a href="manage-episode.html" class="flex items-center gap-3 p-4 bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-pastel-blue hover:bg-blue-50 transition">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-500"><i class="fas fa-file-alt"></i></div>
+                    <span class="font-bold text-gray-700">เพิ่มตอนใหม่</span>
+                </a>
+                <a href="manage-users.html?page=Users" class="flex items-center gap-3 p-4 bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-pastel-pink hover:bg-pink-50 transition">
+                    <div class="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center text-pink-500"><i class="fas fa-user-cog"></i></div>
+                    <span class="font-bold text-gray-700">จัดการสมาชิก</span>
+                </a>
+                <a href="index.html" class="flex items-center gap-3 p-4 bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-pastel-yellow hover:bg-yellow-50 transition">
+                    <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-500"><i class="fas fa-home"></i></div>
+                    <span class="font-bold text-gray-700">ไปหน้าบ้าน</span>
+                </a>
+            </div>
+        </div>
+
+    </main>
+
+    <footer id="footer-container" class="mt-auto"></footer>
+
+    <script type="module" src="js/pages/admin-dashboard.js"></script>
+</body>
+</html>

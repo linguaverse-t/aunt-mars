@@ -1,0 +1,84 @@
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+}
+ 
+::-webkit-scrollbar-thumb {
+    background: #D8B4FE; /* pastel-purple */
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #C084FC; 
+}
+
+/* Hero Section Styles (Revised) */
+.hero-wrapper {
+    width: 100%;
+    position: relative;
+}
+
+.hero-image-container {
+    width: 100%;
+    height: 400px; /* Reduced height as requested to separate content */
+    background-image: url('../images/cover.png');
+    background-size: cover;
+    background-position: center 30%; /* Adjust to focus on the best part of image */
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+/* Gradient Fade at bottom of hero image to blend with white section */
+.hero-fade {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    /*background: linear-gradient(to bottom, transparent, #FFF9FA);*/
+    background: transparent;
+}
+
+/* Welcome Box Styling */
+.welcome-section {
+    background-color: #FFF9FA;
+    position: relative;
+    z-index: 10;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.glass-card-simple {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(195, 177, 225, 0.2); /* Soft Purple Shadow */
+    border: 1px solid rgba(255, 209, 220, 0.3);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+}
+
+/* SweetAlert Custom Font */
+.swal2-popup {
+    font-family: 'Mali', cursive !important;
+}
+
+/* Utility for text truncation */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จัดการรายการเติมเงิน - LinguaVerse Admin</title>
+    <link rel="icon" href="images/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pastel: { purple: '#D8B4FE', pink: '#F9A8D4', blue: '#A5F3FC', yellow: '#FDE68A', green: '#86EFAC', bg: '#FDF2F8' },
+                        brand: { dark: '#4C1D95', primary: '#C084FC' }
+                    },
+                    fontFamily: { mali: ['Mali', 'cursive'], sarabun: ['Sarabun', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-gray-50 font-mali text-gray-700 flex flex-col min-h-screen">
+
+    <header id="navbar-container" class="sticky top-0 z-50"></header>
+    <div id="auth-modal-container"></div>
+
+    <main class="flex-grow container mx-auto px-4 py-8 max-w-6xl">
+        
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-brand-dark flex items-center gap-3">
+                    <i class="fas fa-file-invoice-dollar text-pastel-pink"></i> จัดการรายการแจ้งเติมเงิน
+                </h1>
+                <p class="text-gray-500 text-sm mt-1">อนุมัติหรือปฏิเสธรายการโอนเงินจากสมาชิก</p>
+            </div>
+            <a href="admin-dashboard.html" class="bg-white border border-gray-200 text-gray-600 px-4 py-2 rounded-xl hover:bg-gray-50 transition shadow-sm font-bold">
+                <i class="fas fa-arrow-left mr-2"></i> กลับ Dashboard
+            </a>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-100 text-gray-500 text-sm">
+                            <th class="p-4 font-bold">วันที่/เวลา</th>
+                            <th class="p-4 font-bold">ผู้ใช้ (User)</th>
+                            <th class="p-4 font-bold">รายละเอียด (ธนาคาร)</th>
+                            <th class="p-4 font-bold text-center">Points</th>
+                            <th class="p-4 font-bold text-center">สถานะ</th>
+                            <th class="p-4 font-bold text-center">จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topupTableBody" class="divide-y divide-gray-100">
+                        <tr>
+                            <td colspan="6" class="p-8 text-center text-gray-400">
+                                <i class="fas fa-spinner fa-spin mr-2"></i> กำลังโหลดข้อมูล...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <footer id="footer-container" class="mt-auto"></footer>
+
+    <script type="module" src="js/pages/manage-topup.js"></script>
+</body>
+</html>

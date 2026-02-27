@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>คลังนิยาย - LinguaVerse</title>
+    <link rel="icon" href="images/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pastel: { purple: '#D8B4FE', pink: '#F9A8D4', blue: '#A5F3FC', yellow: '#FDE68A', green: '#86EFAC', bg: '#FDF2F8' },
+                        brand: { dark: '#4C1D95', primary: '#C084FC' }
+                    },
+                    fontFamily: { mali: ['Mali', 'cursive'], sarabun: ['Sarabun', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-pastel-bg font-mali text-gray-700 flex flex-col min-h-screen">
+
+    <header id="navbar-container" class="sticky top-0 z-50"></header>
+    <div id="auth-modal-container"></div>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <section class="mb-10 animate-fade-in">
+            <h1 class="text-3xl font-bold text-brand-dark mb-6 border-l-4 border-pastel-pink pl-4">คลังนิยายทั้งหมด</h1>
+            
+            <div class="bg-white p-6 rounded-3xl shadow-lg border border-pastel-purple/30">
+                <div class="relative mb-6">
+                    <input type="text" id="searchInput" placeholder="ค้นหาชื่อเรื่อง (ไทย, อังกฤษ, ต้นฉบับ)..." 
+                        class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-pastel-purple focus:ring-2 focus:ring-pastel-purple/50 outline-none transition shadow-sm font-saraban">
+                    <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <select id="statusFilter" class="w-full p-2.5 rounded-xl border border-gray-200 focus:border-pastel-purple outline-none bg-white font-saraban cursor-pointer">
+                        <option value="">สถานะทั้งหมด</option>
+                        <option value="Ongoing">Ongoing (กำลังแปล)</option>
+                        <option value="Completed">Completed (จบแล้ว)</option>
+                        <option value="Hiatus">Hiatus (พักการแปล)</option>
+                        <option value="Coming Soon">Coming Soon (เร็วๆ นี้)</option>
+                    </select>
+
+                    <select id="genreFilter" class="w-full p-2.5 rounded-xl border border-gray-200 focus:border-pastel-purple outline-none bg-white font-saraban cursor-pointer">
+                        <option value="">ทุกหมวดหมู่</option>
+                        <option value="Action">Action</option>
+                        <option value="Adventure">Adventure</option>
+                        <option value="Comedy">Comedy</option>
+                        <option value="Drama">Drama</option>
+                        <option value="Fantasy">Fantasy</option>
+                        <option value="Romance">Romance</option>
+                        <option value="Yaoi">Yaoi</option>
+                        <option value="Yuri">Yuri</option>
+                        <option value="Adult">Adult</option>
+                        <option value="Psychological">Psychological</option>
+                        <option value="Slice of Life">Slice of Life</option>
+                        <option value="Supernatural">Supernatural</option>
+                        <option value="Tragedy">Tragedy</option>
+                        <option value="Josei">Josei</option>
+                        <option value="Mature">Mature</option>
+                        <option value="Smut">Smut</option>
+                    </select>
+
+                     <select id="langFilter" class="w-full p-2.5 rounded-xl border border-gray-200 focus:border-pastel-purple outline-none bg-white font-saraban cursor-pointer">
+                        <option value="">ทุกภาษา</option>
+                        <option value="KR">เกาหลี (KR)</option>
+                        <option value="CN">จีน (CN)</option>
+                        <option value="JP">ญี่ปุ่น (JP)</option>
+                        <option value="EN">อังกฤษ (EN)</option>
+                        <option value="TH">ไทย (TH)</option>
+
+                    </select>
+
+                    <button id="resetFiltersBtn" class="w-full py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-600 transition font-bold">
+                        <i class="fas fa-undo mr-2"></i>ล้างค่า
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="library-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 min-h-[400px]">
+            <div class="col-span-full flex flex-col items-center justify-center text-pastel-purple py-20">
+                <i class="fas fa-circle-notch fa-spin text-4xl mb-4"></i>
+                <p>กำลังค้นหาในจักรวาล...</p>
+            </div>
+        </section>
+
+        <section id="pagination" class="flex justify-center items-center space-x-2 mt-12 hidden">
+            </section>
+
+    </main>
+
+    <footer id="footer-container" class="mt-auto"></footer>
+    <button id="scrollToTopBtn" class="fixed bottom-8 right-8 bg-pastel-purple hover:bg-brand-primary text-white p-4 rounded-full shadow-lg transition-all duration-300 opacity-0 translate-y-10 z-40 hidden"><i class="fas fa-arrow-up"></i></button>
+
+    <script type="module" src="js/pages/library.js"></script>
+</body>
+</html>

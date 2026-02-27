@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เติม Points - LinguaVerse</title>
+    <link rel="icon" href="images/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pastel: { purple: '#D8B4FE', pink: '#F9A8D4', blue: '#A5F3FC', yellow: '#FDE68A', green: '#86EFAC', bg: '#FDF2F8' },
+                        brand: { dark: '#4C1D95', primary: '#C084FC' }
+                    },
+                    fontFamily: { mali: ['Mali', 'cursive'], sarabun: ['Sarabun', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-pastel-bg font-mali text-gray-700 flex flex-col min-h-screen">
+
+    <header id="navbar-container" class="sticky top-0 z-50"></header>
+    <div id="auth-modal-container"></div>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        
+        <div class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-brand-dark mb-4">เติม Points (TopUp)</h1>
+            <div class="inline-block bg-orange-100 border border-orange-200 rounded-xl p-4 shadow-sm max-w-2xl">
+                <div class="flex items-start gap-3 text-left">
+                    <i class="fas fa-clock text-orange-500 text-xl mt-1"></i>
+                    <div>
+                        <p class="font-bold text-orange-700">เวลาทำการแอดมิน: 07:00 - 20:00 น.</p>
+                        <p class="text-sm text-orange-600 font-saraban">ยอดที่โอนหลังจากเวลานี้ จะได้รับการอนุมัติในเช้าวันถัดไปนะคะ</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            
+            <div class="space-y-6">
+                <div class="bg-white p-6 rounded-3xl shadow-lg border border-pastel-blue/30 text-center">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">สแกนจ่ายผ่าน QR Code</h3>
+                    <div class="bg-white p-2 inline-block rounded-xl border border-gray-200 shadow-inner mb-4">
+                        <img src="images/payment_qr.jpg" class="w-64 h-64 object-contain" onerror="this.src='https://via.placeholder.com/300?text=QR+Code+PromptPay'">
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-xl text-left space-y-2 border border-blue-100">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">ธนาคาร</span>
+                            <span class="font-bold text-brand-dark"><i class="fas fa-university mr-2"></i>กรุงไทย</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">ชื่อบัญชี</span>
+                            <span class="font-bold text-brand-dark">ทิติภา ผาตินาวิน</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-white p-8 rounded-3xl shadow-lg border border-pastel-purple/30">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <span class="bg-pastel-purple text-white w-8 h-8 rounded-full flex items-center justify-center mr-2 text-sm">1</span>
+                        เลือกแพ็กเกจ
+                    </h3>
+
+                    <div class="flex gap-2 mb-4 bg-gray-100 p-1 rounded-xl">
+                        <button onclick="switchTab('monthly')" id="tab-monthly" class="flex-1 py-2 rounded-lg font-bold transition bg-white shadow text-brand-dark">แบบรายเดือน</button>
+                        <button onclick="switchTab('onetime')" id="tab-onetime" class="flex-1 py-2 rounded-lg font-bold transition text-gray-500 hover:text-brand-dark">แบบรายครั้ง</button>
+                    </div>
+
+                    <div id="pkg-monthly" class="grid grid-cols-1 gap-3">
+                        <label class="pkg-card cursor-pointer border-2 border-gray-100 rounded-xl p-4 hover:border-pastel-purple transition relative overflow-hidden group">
+                            <input type="radio" name="package" value="Reader Plan|99|900" class="hidden" onchange="selectPackage(this)">
+                            <div class="flex justify-between items-center relative z-10">
+                                <div>
+                                    <div class="font-bold text-lg group-hover:text-pastel-purple">Reader Plan</div>
+                                    <div class="text-sm text-gray-500 font-saraban">900 Points</div>
+                                </div>
+                                <div class="text-xl font-bold text-gray-700">99 ฿</div>
+                            </div>
+                        </label>
+
+                        <label class="pkg-card cursor-pointer border-2 border-pastel-pink bg-pink-50 rounded-xl p-4 hover:border-pink-400 transition relative overflow-hidden group">
+                            <div class="absolute top-0 right-0 bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-bl-lg font-bold z-20">ขายดี 🔥</div>
+                            <input type="radio" name="package" value="Fan Plan|199|2000" class="hidden" onchange="selectPackage(this)" checked>
+                            <div class="flex justify-between items-center relative z-10">
+                                <div>
+                                    <div class="font-bold text-lg text-brand-dark">Fan Plan</div>
+                                    <div class="text-sm text-gray-600 font-saraban">2,000 Points</div>
+                                </div>
+                                <div class="text-xl font-bold text-brand-dark">199 ฿</div>
+                            </div>
+                        </label>
+
+                        <label class="pkg-card cursor-pointer border-2 border-gray-100 rounded-xl p-4 hover:border-pastel-purple transition relative overflow-hidden group">
+                            <input type="radio" name="package" value="Super Fan|299|3300" class="hidden" onchange="selectPackage(this)">
+                            <div class="flex justify-between items-center relative z-10">
+                                <div>
+                                    <div class="font-bold text-lg group-hover:text-pastel-purple">Super Fan</div>
+                                    <div class="text-sm text-gray-500 font-saraban">3,300 Points</div>
+                                </div>
+                                <div class="text-xl font-bold text-gray-700">299 ฿</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div id="pkg-onetime" class="grid grid-cols-1 gap-3 hidden">
+                        <label class="pkg-card cursor-pointer border-2 border-gray-100 rounded-xl p-4 hover:border-pastel-purple transition relative overflow-hidden group">
+                            <input type="radio" name="package" value="One-Time S|50|400" class="hidden" onchange="selectPackage(this)">
+                            <div class="flex justify-between items-center relative z-10">
+                                <div>
+                                    <div class="font-bold text-lg group-hover:text-pastel-purple">Pack S</div>
+                                    <div class="text-sm text-gray-500 font-saraban">400 Points</div>
+                                </div>
+                                <div class="text-xl font-bold text-gray-700">50 ฿</div>
+                            </div>
+                        </label>
+
+                        <label class="pkg-card cursor-pointer border-2 border-yellow-200 bg-yellow-50 rounded-xl p-4 hover:border-yellow-400 transition relative overflow-hidden group">
+                            <div class="absolute top-0 right-0 bg-yellow-500 text-white text-[10px] px-2 py-0.5 rounded-bl-lg font-bold z-20">แนะนำ ⭐</div>
+                            <input type="radio" name="package" value="One-Time M|100|820" class="hidden" onchange="selectPackage(this)">
+                            <div class="flex justify-between items-center relative z-10">
+                                <div>
+                                    <div class="font-bold text-lg text-yellow-800">Pack M</div>
+                                    <div class="text-sm text-gray-600 font-saraban">820 Points</div>
+                                </div>
+                                <div class="text-xl font-bold text-yellow-800">100 ฿</div>
+                            </div>
+                        </label>
+
+                        <label class="pkg-card cursor-pointer border-2 border-gray-100 rounded-xl p-4 hover:border-pastel-purple transition relative overflow-hidden group">
+                            <input type="radio" name="package" value="One-Time L|150|1260" class="hidden" onchange="selectPackage(this)">
+                            <div class="flex justify-between items-center relative z-10">
+                                <div>
+                                    <div class="font-bold text-lg group-hover:text-pastel-purple">Pack L</div>
+                                    <div class="text-sm text-gray-500 font-saraban">1,260 Points</div>
+                                </div>
+                                <div class="text-xl font-bold text-gray-700">150 ฿</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-3xl shadow-lg border border-pastel-purple/30">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <span class="bg-pastel-pink text-white w-8 h-8 rounded-full flex items-center justify-center mr-2 text-sm">2</span>
+                        แจ้งรายละเอียดการโอน
+                    </h3>
+                    <form id="topupForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Username</label>
+                            <input type="text" id="usernameField" class="w-full p-3 border rounded-xl bg-gray-100 text-gray-500 cursor-not-allowed font-bold" readonly value="Loading...">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-1">ธนาคาร/ชื่อบัญชีที่ใช้โอน <span class="text-red-500">*</span></label>
+                            <input type="text" id="bankInfo" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-pastel-purple outline-none font-saraban" placeholder="เช่น กสิกรไทย / ชื่อจริง นามสกุล" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-1">วันที่และเวลาที่โอน <span class="text-red-500">*</span></label>
+                            <input type="datetime-local" id="transferTime" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-pastel-purple outline-none font-saraban" required>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 mt-2">
+                            <p class="text-sm text-gray-500">แพ็กเกจที่เลือก:</p>
+                            <p id="selectedPkgText" class="font-bold text-brand-dark text-lg">Fan Plan (199 ฿)</p>
+                            <input type="hidden" id="selectedPkgValue" value="Fan Plan|199|2000">
+                        </div>
+
+                        <button type="submit" class="w-full bg-gradient-to-r from-pastel-purple to-pastel-pink hover:from-purple-400 hover:to-pink-400 text-white py-3 rounded-xl font-bold shadow-md transition transform hover:scale-105 mt-4">
+                            <i class="fas fa-paper-plane mr-2"></i> แจ้งโอนเงิน
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer id="footer-container" class="mt-auto"></footer>
+
+    <script type="module" src="js/pages/topup.js"></script>
+    <script>
+        // Tab Switcher Logic
+        function switchTab(tab) {
+            const btnMonthly = document.getElementById('tab-monthly');
+            const btnOnetime = document.getElementById('tab-onetime');
+            const divMonthly = document.getElementById('pkg-monthly');
+            const divOnetime = document.getElementById('pkg-onetime');
+
+            if(tab === 'monthly') {
+                btnMonthly.classList.add('bg-white', 'shadow', 'text-brand-dark'); btnMonthly.classList.remove('text-gray-500');
+                btnOnetime.classList.remove('bg-white', 'shadow', 'text-brand-dark'); btnOnetime.classList.add('text-gray-500');
+                divMonthly.classList.remove('hidden'); divOnetime.classList.add('hidden');
+            } else {
+                btnOnetime.classList.add('bg-white', 'shadow', 'text-brand-dark'); btnOnetime.classList.remove('text-gray-500');
+                btnMonthly.classList.remove('bg-white', 'shadow', 'text-brand-dark'); btnMonthly.classList.add('text-gray-500');
+                divOnetime.classList.remove('hidden'); divMonthly.classList.add('hidden');
+            }
+        }
+
+        // Package Select Logic
+        function selectPackage(radio) {
+            // Remove active style from all cards
+            document.querySelectorAll('.pkg-card').forEach(c => c.classList.remove('border-pastel-purple', 'bg-purple-50'));
+            // Add style to selected parent label
+            radio.parentElement.classList.add('border-pastel-purple', 'bg-purple-50');
+
+            // Update Summary Text
+            const [name, price, points] = radio.value.split('|');
+            document.getElementById('selectedPkgText').innerText = `${name} (${price} ฿)`;
+            document.getElementById('selectedPkgValue').value = radio.value;
+        }
+    </script>
+</body>
+</html>

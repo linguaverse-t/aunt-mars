@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinguaVerse - จักรวาลนิยายจากหลากหลายภาษา</title>
+    <link rel="icon" href="images/favicon.ico">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mali:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200&family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pastel: {
+                            purple: '#D8B4FE', // ม่วงพาสเทล
+                            pink: '#F9A8D4',   // ชมพูพาสเทล
+                            blue: '#A5F3FC',   // ฟ้าพาสเทล
+                            yellow: '#FDE68A', // เหลืองพาสเทล
+                            green: '#86EFAC',  // เขียวพาสเทล
+                            bg: '#FDF2F8'      // พื้นหลังชมพูอ่อนจางๆ
+                        },
+                        brand: {
+                            dark: '#4C1D95',   // ม่วงเข้มสำหรับ text
+                            primary: '#C084FC'
+                        }
+                    },
+                    fontFamily: {
+                        mali: ['Mali', 'cursive'],
+                        sarabun: ['Sarabun', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-pastel-bg font-mali text-gray-700 flex flex-col min-h-screen">
+
+    <header id="navbar-container" class="sticky top-0 z-50"></header>
+
+    <div id="auth-modal-container"></div>
+
+    <div class="hero-wrapper">
+        <div class="hero-image-container">
+            <div class="hero-fade"></div>
+        </div>
+    </div>
+
+    <main class="flex-grow container mx-auto px-4 py-8 space-y-12">
+
+        <section class="text-center space-y-6 animate-fade-in">
+            <!--<div class="relative w-full max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-xl border-4 border-white">
+                <img src="images/cover.png" alt="LinguaVerse Cover" class="w-full h-64 object-cover" onerror="this.src='https://via.placeholder.com/1200x400/D8B4FE/ffffff?text=LinguaVerse+Cover'">
+                <div class="absolute inset-0 bg-gradient-to-t from-pastel-purple/80 to-transparent flex items-end justify-center pb-6">
+                    <h1 class="text-4xl md:text-6xl font-bold text-white drop-shadow-md">LinguaVerse</h1>
+                </div>
+            </div>-->
+
+            <div class="bg-white/80 backdrop-blur-sm p-8 rounded-3xl shadow-lg max-w-3xl mx-auto border border-pastel-pink">
+                <h2 class="text-2xl font-bold text-brand-dark mb-4">“จักรวาลนิยายจากหลากหลายภาษา”</h2>
+                <p class="text-lg leading-relaxed text-gray-600">
+                    เพราะภาษาไม่ควรเป็นอุปสรรคของความสนุก ดังนั้นนิยายหลากหลายประเทศ ไม่ว่าจะเป็นเกาหลี จีน ญี่ปุ่น หรืออังกฤษ 
+                    <span class="font-bold text-pastel-pink">"LinguaVerse"</span> แปลนิยายเหล่านี้เป็นภาษาไทย เพื่อให้คุณอินกับตัวละครและเรื่องราวได้แบบไม่มีเส้นแบ่งภาษา
+                </p>
+            </div>
+        </section>
+
+	<div class="flex items-center justify-between mb-6 border-l-4 border-pastel-blue pl-4">
+            <h2 class="text-3xl font-bold text-brand-dark flex items-center gap-3 font-mali">
+                <i class="fas fa-clock text-pastel-green fa-beat"></i> 
+                อัพเดทล่าสุด
+                <i class="fas fa-bolt text-pastel-yellow fa-bounce text-xl ml-1"></i>
+            </h2>
+            <a href="library.html" class="text-sm font-bold text-gray-500 hover:text-brand-primary transition font-saraban">
+                ดูทั้งหมด <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+
+        <section id="latest-updates-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12">
+            <div class="col-span-full text-center py-10 text-gray-400">
+                <i class="fas fa-circle-notch fa-spin mr-2"></i> กำลังโหลดอัพเดทล่าสุด...
+            </div>
+        </section>
+
+	<div class="flex items-center justify-between mb-6 border-l-4 border-pastel-purple pl-4">
+            <h2 class="text-3xl font-bold text-gray-800 font-mali flex items-center">
+                <i class="fas fa-book text-blue-500 fa-beat mr-2 drop-shadow-sm"></i> นิยายมาใหม่
+            </h2>
+            <a href="library.html?page=นิยายทั้งหมด" class="text-gray-400 text-sm hover:text-pastel-purple transition">ดูทั้งหมด ></a>
+        </div>
+
+        <section id="novel-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div class="col-span-full text-center py-10 text-gray-400">
+                <i class="fas fa-circle-notch fa-spin mr-2"></i> กำลังโหลดนิยาย...
+            </div>
+        </section>
+
+    </main>
+
+    <footer id="footer-container" class="mt-auto"></footer>
+
+    <button id="scrollToTopBtn" class="fixed bottom-8 right-8 bg-pastel-purple hover:bg-brand-primary text-white p-4 rounded-full shadow-lg transition-all duration-300 opacity-0 translate-y-10 z-40 hidden">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+    </button>
+
+    <script type="module" src="js/pages/home.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</body>
+</html>
