@@ -128,16 +128,6 @@ async function loadContent() {
             return;
         }
 
-// อัปเดตยอดวิว (View Count) ให้นิยายเมื่อมีคนกดเข้ามาอ่านสำเร็จ
-        try {
-            // ไม่ต้องเช็ค auth สามารถให้ Guest บวกยอดวิวได้ตาม Rules ใหม่
-            await updateDoc(doc(db, "novels", novelId), {
-                viewCount: increment(1)
-            });
-        } catch (viewError) {
-            console.error("Failed to update view count:", viewError);
-        }
-
         let contentHtml = epData.content || '';
         const separatorImg = '<img src="https://res.cloudinary.com/dndzxxk8x/image/upload/v1771080049/%E0%B9%80%E0%B8%AA%E0%B9%89%E0%B8%99%E0%B8%84%E0%B8%B1%E0%B9%88%E0%B8%99-Dog-removebg-preview_uera2l.png" class="custom-separator" alt="separator">';
         contentHtml = contentHtml.replace(/<hr[^>]*\/?>/gi, separatorImg);
