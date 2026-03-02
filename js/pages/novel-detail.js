@@ -110,6 +110,15 @@ async function loadNovelDetails(id) {
             return;
         }
 
+// เพิ่มยอดวิวให้กับนิยายทันทีที่มีคนเปิดเข้ามาดูหน้ารายละเอียด
+        try {
+            await updateDoc(docRef, {
+                viewCount: increment(1)
+            });
+        } catch (viewError) {
+            console.error("Failed to update view count:", viewError);
+        }
+
         currentNovelData = docSnap.data();
         renderNovelInfo(currentNovelData);
         loadOtherWorks(currentNovelData.author);
