@@ -114,6 +114,15 @@ async function loadNovelDetails(id) {
         renderNovelInfo(currentNovelData);
         loadOtherWorks(currentNovelData.author);
 
+// [ADD] Update view count using existing docRef
+        try {
+            await updateDoc(docRef, {
+                viewCount: increment(1)
+            });
+        } catch (viewError) {
+            console.error("Failed to update view count:", viewError);
+        }
+
     } catch (error) { console.error("Error:", error); }
 }
 
