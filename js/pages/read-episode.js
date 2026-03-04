@@ -290,15 +290,27 @@ window.postComment = async () => {
         
         await addDoc(collection(db, "novels", novelId, "episodes", currentEpisodeDocId, "comments"), commentData);
 
-        // --- ระบบแจ้งเตือน (แก้บั๊กแล้ว) ---
-        // กำหนดผู้รับ: ถ้าไม่มี authorId ในนิยาย ให้ส่งหา admin แทน
-        const targetUserId = novelData.authorId || 'admin'; 
+        // --- ระบบแจ้งเตือน (ปรับปรุงใหม่) ---
+        let targetUserId = novelData.authorId || 'admin'; 
+        let notificationTitle = `ความคิดเห็นใหม่จาก ${commentData.username}`;
+
+        // หากเป็นการตอบกลับ (Reply) ให้ไปดึง ID เจ้าของคอมเมนต์หลักมาเป็นผู้รับแจ้งเตือนแทน
+        if (replyingToId) {
+            const parentRef = doc(db, "novels", novelId, "episodes", currentEpisodeDocId, "comments", replyingToId);
+            const parentSnap = await getDoc(parentRef);
+            if (parentSnap.exists()) {
+                targetUserId = parentSnap.data().userId;
+                notificationTitle = `${commentData.username} ตอบกลับความคิดเห็นของคุณ`;
+            }
+        } 
         
         if (targetUserId !== currentUser.uid) { 
              await addDoc(collection(db, "notifications"), {
                 to: targetUserId,
                 type: 'comment',
-                title: `ความคิดเห็นใหม่จาก ${commentData.username}`,
+		from: commentData.username,
+		senderId: currentUser.uid,
+                title: notificationTitle,
                 message: `ตอนที่ ${episodeNumber}: "${text.substring(0, 30)}..."`,
                 link: window.location.href, // ลิงก์สำหรับกดเพื่อเข้ามาดูคอมเมนต์
                 isRead: false,
