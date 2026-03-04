@@ -16,9 +16,13 @@ const decodeData = (value) => decodeURIComponent(value || '');
 export const getNotifications = async (userId, role) => {
     if (!userId) return [];
     const notificationsRef = collection(db, "notifications");
+
+// กำหนดกลุ่มผู้รับเป้าหมาย: ถ้าเป็น admin ให้ดึงทั้ง 'admin' และ 'userId' ของตัวเอง
+    const targetIds = role === 'admin' ? ['admin', userId] : [userId];
+
     const q = query(
         notificationsRef,
-        where("to", "==", role === 'admin' ? 'admin' : userId),
+        where("to", "in", targetIds),
         orderBy("createdAt", "desc"),
         limit(20)
     );
