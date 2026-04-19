@@ -153,10 +153,11 @@ function renderEpisodeCurrentPage() {
     pageData.forEach(data => {
         const tr = document.createElement('tr');
         tr.className = "border-b border-gray-100 hover:bg-gray-50 transition";
+	const pointsBadge = getPriceBadge(data.requiredPoints, data.accessType);
         tr.innerHTML = `
             <td class="p-3 text-center font-bold text-pastel-purple">#${data.episodeNumber}</td>
             <td class="p-3 font-saraban">${data.title}</td>
-            <td class="p-3 text-center">${getPriceBadge(data.requiredPoints)}</td>
+            <td class="p-3 text-center">${getPriceBadge(data.requiredPoints, data.accessType)}</td>
             <td class="p-3 text-center">
                 ${data.isPublished ? '<span class="text-green-500"><i class="fas fa-check-circle"></i></span>' : '<span class="text-gray-300"><i class="fas fa-clock"></i></span>'}
             </td>
@@ -267,20 +268,20 @@ function setupFormEvents() {
 
         const epId = document.getElementById('episodeId').value;
         const epNum = parseInt(document.getElementById('episodeNumber').value);
+        const content = editor.innerHTML;
         const points = parseInt(document.getElementById('priceType').value);
-
-        const content = document.getElementById('editor').innerHTML;
-        const isPublished = document.getElementById('isPublished').checked; // ดึงค่าจากการติ๊ก Checkbox
+        const isPublished = document.getElementById('isPublished').checked;
 
         const formData = {
             episodeNumber: epNum,
             title: document.getElementById('episodeTitle').value,
             content: content,
-            requiredPoints: points,
-            accessType: points > 0 ? 'points' : 'free',
+            requiredPoints: points > 0 ? points : 0,
+            accessType: points === -1 ? 'daily_free' : (points > 0 ? 'points' : 'free'),
             isPublished: isPublished, // บันทึกสถานะเผยแพร่
             wordCount: content.replace(/<[^>]*>/g, '').length,
-            createdAt: serverTimestamp() // จะไม่แก้ถ้าเป็น update
+	    updatedAt: serverTimestamp()
+            //createdAt: serverTimestamp() // จะไม่แก้ถ้าเป็น update
         };
         
         // Remove createdAt if update
@@ -294,7 +295,7 @@ function setupFormEvents() {
             if (epId) {
                 // Update
                 await updateDoc(doc(epRef, epId), formData);
-                // [ADD] Update latestUpdatedAt only if it is published
+                // Update latestUpdatedAt only if it is published
                 if (isPublished) {
                     await updateDoc(doc(db, "novels", selectedNovelId), {
                         latestUpdatedAt: serverTimestamp()
@@ -361,7 +362,7 @@ async function handleEdit(e) {
             document.getElementById('episodeId').value = epId;
             document.getElementById('episodeNumber').value = data.episodeNumber;
             document.getElementById('episodeTitle').value = data.title;
-            document.getElementById('priceType').value = data.requiredPoints || 0;
+            document.getElementById('priceType').value = data.accessType === 'daily_free' ? -1 : (data.requiredPoints || 0);
             document.getElementById('editor').innerHTML = data.content;
 	    document.getElementById('isPublished').checked = data.isPublished !== false;
             
@@ -373,7 +374,8 @@ async function handleEdit(e) {
 }
 
 // Helpers
-function getPriceBadge(points) {
+function getPriceBadge(points, accessType = '') {
+    if (points === -1 || accessType === 'daily_free') return `<span class="bg-blue-100 text-blue-600 px-2 py-1 rounded-md text-xs font-bold shadow-sm"><i class="fas fa-clock mr-1"></i> Daily Free</span>`;
     if (points === 0) return `<span class="bg-gray-200 text-gray-600 px-2 py-1 rounded-md text-xs font-bold shadow-sm">Free</span>`;
     if (points <= 10) return `<span class="bg-blue-100 text-blue-600 px-2 py-1 rounded-md text-xs font-bold shadow-sm">Standard (${points})</span>`;
     if (points <= 15) return `<span class="bg-green-100 text-green-600 px-2 py-1 rounded-md text-xs font-bold shadow-sm">Special (${points})</span>`;
