@@ -118,7 +118,7 @@ async function loadContent() {
         }
 
         const price = epData.requiredPoints || 0;
-        const isFree = price === 0 || epData.accessType === 'free';
+        const isFree = (price === 0 && epData.accessType !== 'daily_free') || epData.accessType === 'free';
         const episodeKey = `${novelId}_${epData.episodeNumber}`;
         const canRead = FREE_MODE || isAdminOrWriter || isFree || unlockedEpisodes.includes(episodeKey);
         if (!canRead) {
