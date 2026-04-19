@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     userFavorites = userData.favorites || []; // [ADD]
                     currentUserRole = userData.role || 'user';
                     
-                    // [ADD] อัปเดตสีปุ่มถูกใจทันทีหากผู้ใช้เคยถูกใจนิยายเรื่องนี้แล้ว
+                    // อัปเดตสีปุ่มถูกใจทันทีหากผู้ใช้เคยถูกใจนิยายเรื่องนี้แล้ว
                     const likeBtnEl = document.getElementById('likeBtn');
                     if (likeBtnEl && currentNovelId && userFavorites.includes(currentNovelId)) {
                         likeBtnEl.classList.remove('bg-white', 'text-pastel-pink');
@@ -461,7 +461,10 @@ function renderEpisodesList(episodesToRender) {
     let html = '';
     episodesToRender.forEach(ep => {
         const price = ep.requiredPoints || 0;
-        const isFree = price === 0 || ep.accessType === 'free';
+        // จัดการสถานะให้รองรับอนาคต (Free, Paid, Daily Free) อย่างครอบคลุม
+        const accessMode = ep.accessType || (price === 0 ? 'free' : 'paid');
+        const isDailyFree = accessMode === 'daily_free' || ep.isDailyFree === true || ep.isTimeLimitedFree === true;
+        const isFree = accessMode === 'free' && !isDailyFree;
         const showEpisode = ep.isPublished === true;
         const isWaitingPublish = false;
 
@@ -481,19 +484,22 @@ function renderEpisodesList(episodesToRender) {
         if (isWaitingPublish) {
             buttonHtml = `<span class="bg-amber-100 text-amber-700 text-xs px-2 py-1 rounded-lg font-bold border border-amber-200">⏳รอเผยแพร่</span>`;
         } else if (isAdminOrWriter) {
-            if(isFree) buttonHtml = `<span class="bg-green-100 text-green-600 text-xs px-2 py-1 rounded-lg font-bold">ฟรี (Admin)</span>`;
+            if(isFree) buttonHtml = `<span class="bg-green-100 text-green-600 text-xs px-2 py-1 rounded-lg font-bold">Free</span>`;
             else buttonHtml = `<span class="flex items-center gap-1 bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded-lg font-bold border border-purple-200"><i class="fas fa-coins"></i> ${price}</span>`;
         } else if (isFree) {
             buttonHtml = `<span class="bg-green-100 text-green-600 text-xs px-2 py-1 rounded-lg font-bold">ฟรี</span>`;
-        } else if (isUnlocked) {
+       } else if (isUnlocked) {
             buttonHtml = `<span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-lg font-bold"><i class="fas fa-check"></i> Unlocked</span>`;
+        } else if (isDailyFree) {
+            buttonHtml = `<span class="flex items-center gap-1 bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-lg font-bold border border-blue-200"><i class="fas fa-clock"></i> รออ่านฟรี</span>`;
         } else {
             buttonHtml = `<span class="flex items-center gap-1 bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded-lg font-bold"><i class="fas fa-coins"></i> ${price}</span>`;
         }
 
         html += `
         <div class="episode-item flex items-center justify-between p-3 rounded-xl border border-gray-100 hover:border-pastel-purple hover:bg-pastel-bg/30 transition group cursor-pointer mb-2" 
-           data-ep="${ep.episodeNumber}" data-price="${price}" data-free="${isFree}" data-waiting="${isWaitingPublish}">
+            data-ep="${ep.episodeNumber}" data-price="${price}" data-free="${isFree}" data-waiting="${isWaitingPublish}" 
+            data-dailyfree="${isDailyFree}" data-id="${ep.id}">
             <div class="flex items-center gap-3">
                 <span class="text-gray-400 text-sm font-mono w-10">#${ep.episodeNumber}</span>
                 <div class="flex flex-col">
@@ -526,6 +532,8 @@ function handleEpisodeListClick(e) {
     const price = parseInt(item.dataset.price);
     const isFree = item.dataset.free === 'true';
     const isWaitingPublish = item.dataset.waiting === 'true';
+
+    const isDailyFree = item.dataset.dailyfree === 'true';
     const isAdminOrWriter = ['admin', 'writer'].includes(currentUserRole);
 
     if (isWaitingPublish && !isAdminOrWriter) return;
@@ -533,10 +541,10 @@ function handleEpisodeListClick(e) {
     const btnArea = item.querySelector('.fa-spin');
     if (btnArea) return;
     
-    handleUnlockClick(epNum, price, isFree);
+    handleUnlockClick(epNum, price, isFree, isDailyFree);
 }
 
-function handleUnlockClick(epNum, price, isFree) {
+function handleUnlockClick(epNum, price, isFree, isDailyFree) {
     const episodeKey = `${currentNovelId}_${epNum}`;
     const isUnlocked = userUnlockedEpisodes.includes(episodeKey);
     const isAdmin = ['admin', 'writer'].includes(currentUserRole);
@@ -556,6 +564,12 @@ function handleUnlockClick(epNum, price, isFree) {
             confirmButtonColor: '#D8B4FE',
             cancelButtonText: 'ยกเลิก'
         }).then((res) => { if(res.isConfirmed) showAuthModal('signin'); });
+        return;
+    }
+
+    // ถ้าเป็นตอนฟรีประจำวัน ให้เช็คโควต้า
+    if (isDailyFree && !isUnlocked) {
+        checkAndUnlockDailyFree(epNum, price);
         return;
     }
 
@@ -610,6 +624,79 @@ async function checkAndPay(epNum, price) {
                 confirmButtonText: 'เติมพอยต์',
                 confirmButtonColor: '#A5F3FC'
             }).then((res) => { if(res.isConfirmed) window.location.href = 'topup.html'; });
+        } else {
+            console.error(e);
+            Swal.fire('Error', 'เกิดข้อผิดพลาด: ' + e, 'error');
+        }
+    }
+}
+
+async function checkAndUnlockDailyFree(epNum, price) {
+    try {
+        // ดึงวันที่ปัจจุบัน (อิงตามเวลาไทยแบบ Local YYYY-MM-DD เพื่อรีเซ็ตรายวัน)
+        const todayStr = new Date().toLocaleDateString('en-CA'); 
+        
+        await runTransaction(db, async (transaction) => {
+            const userRef = doc(db, "users", currentUser.uid);
+            const userDoc = await transaction.get(userRef);
+            
+            if (!userDoc.exists()) throw "User not found";
+            
+            const userData = userDoc.data();
+            const serverUnlocked = userData.unlockedEpisodes || [];
+            const episodeKey = `${currentNovelId}_${epNum}`;
+
+            if (serverUnlocked.includes(episodeKey)) throw "AlreadyPurchased";
+
+            let usage = userData.dailyFreeUsage || { date: '', count: 0 };
+            
+            // ถ้าระบบจำวันที่ไม่ตรงกับวันนี้ ให้รีเซ็ตโควต้าเริ่มนับ 0 ใหม่
+            if (usage.date !== todayStr) {
+                usage = { date: todayStr, count: 0 };
+            }
+            
+            // ตรวจสอบว่าใช้ครบ 3 หรือยัง (แก้ไขตัวเลขนี้ได้ในอนาคตถ้าอยากเพิ่มลดจำนวน)
+            if (usage.count >= 3) throw "QuotaExceeded";
+
+            usage.count += 1; // บวกโควต้าการใช้งาน
+
+            // บันทึกกลับลงฐานข้อมูลผู้ใช้
+            transaction.update(userRef, {
+                dailyFreeUsage: usage,
+                unlockedEpisodes: arrayUnion(episodeKey),
+                readingHistory: arrayUnion(currentNovelId)
+            });
+        });
+
+        showToast('success', 'ใช้สิทธิ์อ่านฟรี 1 ตอนเรียบร้อยค่ะ');
+        userUnlockedEpisodes.push(`${currentNovelId}_${epNum}`);
+        
+        const btnArea = document.getElementById(`btn-area-${epNum}`);
+        if(btnArea) {
+            btnArea.innerHTML = `<span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-lg font-bold"><i class="fas fa-check"></i> Unlocked</span> <i class="fas fa-chevron-right text-gray-300 ml-3 group-hover:text-pastel-purple text-xs"></i>`;
+        }
+
+        setTimeout(() => {
+            window.location.href = `read-episode.html?id=${currentNovelId}&ep=${epNum}`;
+        }, 500);
+
+    } catch (e) {
+        if (e === "AlreadyPurchased") {
+            window.location.href = `read-episode.html?id=${currentNovelId}&ep=${epNum}`;
+        } else if (e === "QuotaExceeded") {
+            Swal.fire({
+                title: 'โควต้าอ่านฟรีรายวันหมดแล้ว 🥺',
+                text: `ใช้สิทธิ์อ่านฟรี 3 ตอนของวันนี้ครบแล้วค่ะ ต้องการใช้ ${price > 0 ? price : 10} พอยต์ เพื่อปลดล็อกตอนนี้เลยไหมคะ?`,
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'ใช้พอยต์ปลดล็อก',
+                cancelButtonText: 'รอพรุ่งนี้',
+                confirmButtonColor: '#D8B4FE'
+            }).then((res) => {
+                if (res.isConfirmed) {
+                    checkAndPay(epNum, price > 0 ? price : 10);
+                }
+            });
         } else {
             console.error(e);
             Swal.fire('Error', 'เกิดข้อผิดพลาด: ' + e, 'error');
